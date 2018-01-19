@@ -73,6 +73,7 @@ def get_recession_end():
     result = None
     for i in range(len(file)):
         if(file['GDP'][i]<file['GDP'][i+1]<file['GDP'][i+2]):
+        if file['GDP'][i]<file['GDP'][i+1]<file['GDP'][i+2]:
             result = file['Years Quarterly'][i+2]
             break
 
@@ -85,13 +86,13 @@ def get_recession_bottom():
 
     file = pd.read_excel('gdplev.xls')
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
-    columns = ['Years Quarterly','GDP']
+    columns = ['Years Quarterly', 'GDP']
     file = file[columns]
     file = file.drop(file.index[0:7]).reset_index().drop('index', axis=1)
-    index2 = int(file[file['Years Quarterly']==start_recession].index.values)
-    index3 = int(file[file['Years Quarterly']==end_recession].index.values)
+    index2 = int(file[file['Years Quarterly'] == start_recession].index.values)
+    index3 = int(file[file['Years Quarterly'] == end_recession].index.values)
     file = file.iloc[index2:index3+1].reset_index().drop('index', axis=1)
-    bottom = file['Years Quarterly'][(file['GDP']==file['GDP'].min())].iloc[0]
+    bottom = file['Years Quarterly'][(file['GDP'] == file['GDP'].min())].iloc[0]
 
 
     return bottom
