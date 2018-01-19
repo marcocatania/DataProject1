@@ -72,7 +72,6 @@ def get_recession_end():
 
     result = None
     for i in range(len(file)):
-        if(file['GDP'][i]<file['GDP'][i+1]<file['GDP'][i+2]):
         if file['GDP'][i]<file['GDP'][i+1]<file['GDP'][i+2]:
             result = file['Years Quarterly'][i+2]
             break
