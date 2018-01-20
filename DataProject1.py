@@ -4,35 +4,42 @@ from scipy.stats import ttest_ind
 
 states = {'OH': 'Ohio', 'KY': 'Kentucky', 'AS': 'American Samoa', 'NV': 'Nevada', 'WY': 'Wyoming', 'NA': 'National', 'AL': 'Alabama', 'MD': 'Maryland', 'AK': 'Alaska', 'UT': 'Utah', 'OR': 'Oregon', 'MT': 'Montana', 'IL': 'Illinois', 'TN': 'Tennessee', 'DC': 'District of Columbia', 'VT': 'Vermont', 'ID': 'Idaho', 'AR': 'Arkansas', 'ME': 'Maine', 'WA': 'Washington', 'HI': 'Hawaii', 'WI': 'Wisconsin', 'MI': 'Michigan', 'IN': 'Indiana', 'NJ': 'New Jersey', 'AZ': 'Arizona', 'GU': 'Guam', 'MS': 'Mississippi', 'PR': 'Puerto Rico', 'NC': 'North Carolina', 'TX': 'Texas', 'SD': 'South Dakota', 'MP': 'Northern Mariana Islands', 'IA': 'Iowa', 'MO': 'Missouri', 'CT': 'Connecticut', 'WV': 'West Virginia', 'SC': 'South Carolina', 'LA': 'Louisiana', 'KS': 'Kansas', 'NY': 'New York', 'NE': 'Nebraska', 'OK': 'Oklahoma', 'FL': 'Florida', 'CA': 'California', 'CO': 'Colorado', 'PA': 'Pennsylvania', 'DE': 'Delaware', 'NM': 'New Mexico', 'RI': 'Rhode Island', 'MN': 'Minnesota', 'VI': 'Virgin Islands', 'NH': 'New Hampshire', 'MA': 'Massachusetts', 'GA': 'Georgia', 'ND': 'North Dakota', 'VA': 'Virginia'}
 
+# Get the list of university towns
+
 def get_list_of_university_towns():
+
     frame = pd.read_table('university_towns.txt')
 
-    frame = frame.T.reset_index().T.reset_index().drop(['index'],axis=1)
+    frame = frame.T.reset_index().T.reset_index().drop(['index'], axis=1)
     frame = frame.rename(columns={frame.columns[0]: 'Data'})
 
+    # Creating column with State name (concatenated with Region Name in the file)
     frame['State'] = None
-    for string in frame['Data']:
-        frame['State'] = frame[frame['Data'].str.endswith('[edit]')]
-        frame['State'] = frame['State'].fillna(method='ffill')
+    frame['State'] = frame[frame['Data'].str.endswith('[edit]')]
+    frame['State'] = frame['State'].fillna(method='ffill')
 
-
+    # Cleaning State and Region names
     frame['Data'] = frame['Data'].str.split('(').str[0].str.rstrip()
     frame['State'] = frame['State'].str.split('[').str[0]
     frame = frame[['State', 'Data']]
     frame.columns = ['State', 'RegionName']
+
+    # Deleting State name only rows
     frame = frame[frame.RegionName.str.endswith(']') == False]
     frame = frame.reset_index().drop(['index'], axis=1)
-
     return frame
 
-frame1 = get_list_of_university_towns()
-get_list_of_university_towns()
+print('\n')
+print('University Towns Data Frame (head): ')    
+print(get_list_of_university_towns().head())
+print('\n')
 
+
+# Get the recession start date
 
 def get_recession_start():
-    '''Returns the year and quarter of the recession start time as a
-    string value in a format such as 2005q3'''
 
+    #Getting and cleaning data
     file = pd.read_excel('gdplev.xls')
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
     columns = ['Years Quarterly','GDP']
@@ -41,24 +48,47 @@ def get_recession_start():
     index = int(file[file['Years Quarterly']=='2000q1'].index.values)
     file = file.iloc[index:].reset_index().drop('index', axis=1)
 
+    #Getting recession start date 
     result = None
     for i in range(len(file)):
-        if(file['GDP'][i]> file['GDP'][i+1]> file['GDP'][i+2]):
+        if file['GDP'][i] > file['GDP'][i+1] > file['GDP'][i+2]:
             result = file['Years Quarterly'][i+1]
             break
-
-
     return result
 
+print('The recession start is: ' + get_recession_start())
+print('\n')
 
-start_recession = get_recession_start()
-get_recession_start()
 
+# Get the quarter before the recession's start
+
+def get_quarter_before_recession():
+
+    #Getting and cleaning data
+    file = pd.read_excel('gdplev.xls')
+    file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
+    columns = ['Years Quarterly','GDP']
+    file = file[columns]
+    file = file.drop(file.index[0:7]).reset_index().drop('index', axis=1)
+    index = int(file[file['Years Quarterly']=='2000q1'].index.values)
+    file = file.iloc[index:].reset_index().drop('index', axis=1)
+
+    #Getting the quarter before recession start
+    result = None
+    for i in range(len(file)):
+        if file['GDP'][i] > file['GDP'][i+1] > file['GDP'][i+2]:
+            result = file['Years Quarterly'][i]
+            break
+    return result
+
+print('The Quarter before the start of the recession is: ' + get_quarter_before_recession())
+print('\n')
+
+# Get the recession end 
 
 def get_recession_end():
-    '''Returns the year and quarter of the recession end time as a
-    string value in a format such as 2005q3'''
 
+    #Getting and cleaning data
     file = pd.read_excel('gdplev.xls')
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
     columns = ['Years Quarterly','GDP']
@@ -67,107 +97,108 @@ def get_recession_end():
     index1 = int(file[file['Years Quarterly']=='2000q1'].index.values)
     file = file.iloc[index1:].reset_index().drop('index', axis=1)
 
-    index2 = int(file[file['Years Quarterly']==start_recession].index.values)
+    index2 = int(file[file['Years Quarterly']==get_recession_start()].index.values)
     file = file.iloc[index2:].reset_index().drop('index', axis=1)
 
+    #Getting recession end quarter (Quarter after two consecutives GDP quarter rise)
     result = None
     for i in range(len(file)):
         if file['GDP'][i]<file['GDP'][i+1]<file['GDP'][i+2]:
             result = file['Years Quarterly'][i+2]
             break
-
     return result
-end_recession = get_recession_end()
-get_recession_end()
+    
 
+print('The recession end is: ' + get_recession_end())
+print('\n')
+
+
+# Get the recession bottom quarter , within the recession period
 
 def get_recession_bottom():
 
+    #Getting and cleaning data
     file = pd.read_excel('gdplev.xls')
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
     columns = ['Years Quarterly', 'GDP']
     file = file[columns]
     file = file.drop(file.index[0:7]).reset_index().drop('index', axis=1)
-    index2 = int(file[file['Years Quarterly'] == start_recession].index.values)
-    index3 = int(file[file['Years Quarterly'] == end_recession].index.values)
+    index2 = int(file[file['Years Quarterly'] == get_recession_start()].index.values)
+    index3 = int(file[file['Years Quarterly'] == get_recession_end()].index.values)
     file = file.iloc[index2:index3+1].reset_index().drop('index', axis=1)
     bottom = file['Years Quarterly'][(file['GDP'] == file['GDP'].min())].iloc[0]
 
-
     return bottom
+    
 
-bottom_recession = get_recession_bottom()
-get_recession_bottom()
+print('The recession bottom is: ' + get_recession_bottom())
+print('\n')
 
 
+#Get housing data and convert from years to quarters (mean value)
 
 def convert_housing_data_to_quarters():
+
+    # Getting and cleaning data
     data = pd.read_csv('City_Zhvi_AllHomes.csv')
     data['State'] = data['State'].map(states)
     data = data.set_index(['State','RegionName'])
     drop = ['RegionID', 'Metro', 'CountyName', 'SizeRank']
     data = data.drop(drop, axis=1)
 
+    # Converting data period from year to quarter
     data = data.groupby(pd.PeriodIndex(data.columns, freq='Q'), axis=1).mean()
     data = data.loc[:,'2000Q1':'2016Q3']
 
-    '''Converts the housing data to quarters and returns it as mean
-    values in a dataframe. This dataframe should be a dataframe with
-    columns for 2000q1 through 2016q3, and should have a multi-index
-    in the shape of ["State","RegionName"].
-
-    Note: Quarters are defined in the assignment description, they are
-    not arbitrary three month periods.
-
-    The resulting dataframe should have 67 columns, and 10,730 rows.
-    '''
-
     return data
 
-hdf = convert_housing_data_to_quarters()
-convert_housing_data_to_quarters()
+print('Data Frame (header) representing the evolution of housing prices (mean value per quarter): ')
+print('\n')
+print(convert_housing_data_to_quarters().head())
+print('\n')
 
+
+#   Creation of new data frame merging the two previous one, and showing the decline or growth of housing prices between the recession start
+#and the recession bottom.
+#Then a ttest is run to compare the university town values to the non-university towns values (on the Price Ratio).
+#The function returns a tuple (different, p, better).
+
+#   "different" returns True or False whether the alternative hypothesis (that the two groups are the same) is true or not.
+#(True if the t-test is True at a p<0.01 - We reject the null hypothesis).
+#(False if otherwise we cannot reject the null hypothesis - p>0.01).
+
+#The variable p is equal to the p value returned from the ttest.
+
+#   The value for "better" is either "university town" or "non-university town" depending on which has a lower mean price ratio
+#(which is equivalent to a reduced market loss).
 
 def run_ttest():
-    '''First creates new data showing the decline or growth of housing prices
-    between the recession start and the recession bottom. Then runs a ttest
-    comparing the university town values to the non-university towns values,
-    return whether the alternative hypothesis (that the two groups are the same)
-    is true or not as well as the p-value of the confidence.
-
-    Return the tuple (different, p, better) where different=True if the t-test is
-    True at a p<0.01 (we reject the null hypothesis), or different=False if
-    otherwise (we cannot reject the null hypothesis). The variable p should
-    be equal to the exact p value returned from scipy.stats.ttest_ind(). The
-    value for better should be either "university town" or "non-university town"
-    depending on which has a lower mean price ratio (which is equivilent to a
-    reduced market loss).'''
-
-
-
-    Q5Frame = convert_housing_data_to_quarters()
-
-    frame = pd.merge(convert_housing_data_to_quarters().reset_index(), get_list_of_university_towns(), on=get_list_of_university_towns().columns.tolist(), indicator ='_flag',how='outer')
+    
+    # Creation of the new dataframe creating a new column separating two groups: university towns and non university towns, and another one computing the mean price ratio (quarter before recession start/recession bottom)
+    frame = pd.merge(convert_housing_data_to_quarters().reset_index(), get_list_of_university_towns(), on = get_list_of_university_towns().columns.tolist(), indicator = '_flag', how= 'outer')
     frame.columns = frame.columns.map(str)
     frame['2008Q3']=frame['2008Q3'].fillna(0)
     frame['2009Q4']=frame['2009Q4'].fillna(0)
-    frame['PriceRatio'] = frame['2008Q3'].div(frame['2009Q4'])
+    frame['PriceRatio'] = frame[get_quarter_before_recession().upper()].div(frame[get_recession_bottom().upper()])
     frame['PriceRatio'] = frame['PriceRatio'].fillna(0)
-    columns = ['State', 'RegionName', '2008Q3', '2009Q2','PriceRatio', '_flag']
+    columns = ['State', 'RegionName', get_quarter_before_recession().upper(), get_recession_bottom().upper(),'PriceRatio', '_flag']
     frame = frame[columns]
 
     group1 = frame[frame['_flag']=='both']
     group2 = frame[frame['_flag']!='both']
 
+    #Ttest
     test = ttest_ind(group2['PriceRatio'], group1['PriceRatio'])
     pval = test[1]
-    different = pval<1
-    better=None
+    different = pval < 0.01
+    better = None
     if group1['PriceRatio'].mean()<group2['PriceRatio'].mean():
         better = 'university town'
     else:
         better = "non-university town"
 
-    return (different, pval, better)
+    return ('The two groups are the same (null hypothesis rejected): ' + str(different), 'The p value is: ' + str(pval), 'The group who has a lower mean price ratio (reduced market loss) is : ' + str(better))
 
-run_ttest()
+
+print(run_ttest())
+print('\n')
