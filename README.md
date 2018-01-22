@@ -2,7 +2,7 @@
 
 	Code file:
 
-- DataOroject1.py
+- data_project1.py
  
 	Technologies used:
 
