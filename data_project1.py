@@ -83,7 +83,7 @@ def get_quarter_before_recession():
             break
     return result
 
-print('The Quarter before the start of the recession is: ' + get_quarter_before_recession())
+print('The Quarter before start of recession is: ' + get_quarter_before_recession())
 print('\n')
 
 # Get the recession end 
@@ -154,13 +154,13 @@ def convert_housing_data_to_quarters():
 
     return data
 
-print('Data Frame (header) representing the evolution of housing prices (mean value per quarter): ')
+print('Data Frame (header) representing the evolution of house prices (mean value per quarter): ')
 print('\n')
 print(convert_housing_data_to_quarters().head())
 print('\n')
 
 
-#   Creation of new data frame merging the two previous one, and showing the decline or growth of housing prices between the recession start
+#   Creation of new data frame merging the two previous one, and showing the decline or growth of house prices between the recession start
 #and the recession bottom.
 #Then a ttest is run to compare the university town values to the non-university towns values (on the Price Ratio).
 #The function returns a tuple (different, p, better).
