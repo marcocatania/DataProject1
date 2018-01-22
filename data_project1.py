@@ -6,12 +6,18 @@ from scipy.stats import ttest_ind
 
 states = {'OH': 'Ohio', 'KY': 'Kentucky', 'AS': 'American Samoa', 'NV': 'Nevada', 'WY': 'Wyoming', 'NA': 'National', 'AL': 'Alabama', 'MD': 'Maryland', 'AK': 'Alaska', 'UT': 'Utah', 'OR': 'Oregon', 'MT': 'Montana', 'IL': 'Illinois', 'TN': 'Tennessee', 'DC': 'District of Columbia', 'VT': 'Vermont', 'ID': 'Idaho', 'AR': 'Arkansas', 'ME': 'Maine', 'WA': 'Washington', 'HI': 'Hawaii', 'WI': 'Wisconsin', 'MI': 'Michigan', 'IN': 'Indiana', 'NJ': 'New Jersey', 'AZ': 'Arizona', 'GU': 'Guam', 'MS': 'Mississippi', 'PR': 'Puerto Rico', 'NC': 'North Carolina', 'TX': 'Texas', 'SD': 'South Dakota', 'MP': 'Northern Mariana Islands', 'IA': 'Iowa', 'MO': 'Missouri', 'CT': 'Connecticut', 'WV': 'West Virginia', 'SC': 'South Carolina', 'LA': 'Louisiana', 'KS': 'Kansas', 'NY': 'New York', 'NE': 'Nebraska', 'OK': 'Oklahoma', 'FL': 'Florida', 'CA': 'California', 'CO': 'Colorado', 'PA': 'Pennsylvania', 'DE': 'Delaware', 'NM': 'New Mexico', 'RI': 'Rhode Island', 'MN': 'Minnesota', 'VI': 'Virgin Islands', 'NH': 'New Hampshire', 'MA': 'Massachusetts', 'GA': 'Georgia', 'ND': 'North Dakota', 'VA': 'Virginia'}
 
+#Import files
+
+doc1 = pd.read_table('/Users/marcocatania/Documents/Projects/Python/DataProject1/university_towns.txt')
+doc2 = pd.read_excel('/Users/marcocatania/Documents/Projects/Python/DataProject1/gdplev.xls')
+doc3 = pd.read_csv('/Users/marcocatania/Documents/Projects/Python/DataProject1/City_Zhvi_AllHomes.csv')
+
+
 # Get the list of university towns
 
 def get_list_of_university_towns():
 
-    frame = pd.read_table('university_towns.txt')
-
+    frame = doc1
     frame = frame.T.reset_index().T.reset_index().drop(['index'], axis=1)
     frame = frame.rename(columns={frame.columns[0]: 'Data'})
 
@@ -42,7 +48,7 @@ print('\n')
 def get_recession_start():
 
     #Getting and cleaning data
-    file = pd.read_excel('gdplev.xls')
+    file = doc2
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
     columns = ['Years Quarterly','GDP']
     file = file[columns]
@@ -67,7 +73,7 @@ print('\n')
 def get_quarter_before_recession():
 
     #Getting and cleaning data
-    file = pd.read_excel('gdplev.xls')
+    file = doc2
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
     columns = ['Years Quarterly','GDP']
     file = file[columns]
@@ -91,7 +97,7 @@ print('\n')
 def get_recession_end():
 
     #Getting and cleaning data
-    file = pd.read_excel('gdplev.xls')
+    file = doc2
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
     columns = ['Years Quarterly','GDP']
     file = file[columns]
@@ -120,7 +126,7 @@ print('\n')
 def get_recession_bottom():
 
     #Getting and cleaning data
-    file = pd.read_excel('gdplev.xls')
+    file = doc2
     file = file.rename(columns = {'Unnamed: 4':'Years Quarterly','Unnamed: 6':'GDP'})
     columns = ['Years Quarterly', 'GDP']
     file = file[columns]
@@ -142,7 +148,7 @@ print('\n')
 def convert_housing_data_to_quarters():
 
     # Getting and cleaning data
-    data = pd.read_csv('City_Zhvi_AllHomes.csv')
+    data = doc3
     data['State'] = data['State'].map(states)
     data = data.set_index(['State','RegionName'])
     drop = ['RegionID', 'Metro', 'CountyName', 'SizeRank']
