@@ -24,13 +24,12 @@ University towns have their mean housing prices less affected by recessions. The
 
 The function returns a tuple (different, p, better).
 
-#   "different" returns True or False whether the alternative hypothesis (that the two groups are the same) is true or not (True if the t-test is True at a p<0.01 - We reject the null hypothesis).
-#(False if otherwise we cannot reject the null hypothesis - p>0.01).
+"different" returns True or False whether the alternative hypothesis (that the two groups are the same) is true or not (True if the t-test is True at a p<0.01 - We reject the null hypothesis).
+(False if otherwise we cannot reject the null hypothesis - p>0.01).
 
-#The variable p is equal to the p value returned from the ttest.
+The variable p is equal to the p value returned from the ttest.
 
-#   The value for "better" is either "university town" or "non-university town" depending on which has a lower mean price ratio
-#(which is equivalent to a reduced market loss).
+The value for "better" is either "university town" or "non-university town" depending on which has a lower mean price ratio (which is equivalent to a reduced market loss).
 
 	The following data files have been used:
 
